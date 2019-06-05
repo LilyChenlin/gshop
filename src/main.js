@@ -8,7 +8,9 @@ import store from './store'
 import FastClick from 'fastclick';
 FastClick.attach(document.body);
 
-//注册Store
+//引入mint-ui的标签组件库
+import {Button} from 'mint-ui'
+Vue.component(Button.name,Button)
 
 Vue.config.productionTip = false
 

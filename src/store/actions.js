@@ -1,5 +1,11 @@
-import {reqAddress,reqCategorys,reqShops} from '../api/index'
-import {RECEIVE_ADDRESS,RECEIVE_CATEGORYS,RECEIVE_SHOPS} from './mutations-type'
+import {reqAddress,reqCategorys,reqShops,reqUserInfo,reqLogout} from '../api/index'
+import {
+    RECEIVE_ADDRESS,
+    RECEIVE_CATEGORYS,
+    RECEIVE_SHOPS,
+    RECEIVE_USER_INFO,
+    RESET_USER_INFO
+} from './mutations-type'
 
 export default {
     //异步获取地址
@@ -33,5 +39,28 @@ export default {
         const result = await reqShops({latitude,longitude})
 
         commit(RECEIVE_SHOPS,{shops : result.data})
+    },
+    //同步记录登录用户信息
+    recordUser ({commit},userInfo) {
+        commit(RECEIVE_USER_INFO,{userInfo})
+    },
+    //异步获取用户信息
+    async getUserInfo ({commit}) {
+        const result = await reqUserInfo()
+        //成功
+        if (result.code === 0) {
+            const userInfo = result.data
+            commit(RECEIVE_USER_INFO,{userInfo})
+        }
+    },
+
+    //异步退出
+    async logout ({commit}) {
+        const result = await reqLogout()
+        //代表已经登录了
+        if (result.code === 0) {
+            commit(RESET_USER_INFO)
+        }
+        
     }
 }

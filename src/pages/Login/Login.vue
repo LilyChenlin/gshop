@@ -16,13 +16,13 @@
             <!-- 使用短信登录 loginWay为true -->
             <div :class="{on:loginWay}">
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机号">
+                <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
                 <button :disabled="!rightPhone" class="get_verification" :class="{right_phone:rightPhone}" @click.prevent="getCode">
                    {{computeTime>0 ? `已发送(${computeTime}s)` : '获取验证码'}}
                 </button>
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="验证码">
+                <input type="tel" maxlength="8" placeholder="验证码" v-model="code">
               </section>
               <section class="login_hint">
                 温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -32,11 +32,11 @@
             <div :class="{on:!loginWay}">
               <section>
                 <section class="login_message">
-                  <input type="tel" maxlength="11" placeholder="手机" v-model="phone">
+                  <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
                 </section>
                 <section class="login_verification">
                   <input type="text" maxlength="8" placeholder="密码" v-if="showPwd" v-model="pwd">
-                  <input type="text" maxlength="8" placeholder="密码" v-else v-model="pwd">
+                  <input type="password" maxlength="8" placeholder="密码" v-else v-model="pwd">
                   <!-- 滑块区域 为滑块区域添加点击监听 -->
                   <div class="switch_button" :class="showPwd?'on':'off'" @click="showPwd=!showPwd">
                     <div class="switch_circle" :class="{right:showPwd}"></div>
@@ -44,7 +44,7 @@
                   </div>
                 </section>
                 <section class="login_message">
-                  <input type="text" maxlength="11" placeholder="验证码">
+                  <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
                   <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha" ref="captcha">
                 </section>
               </section>
@@ -64,6 +64,7 @@
 
 <script>
 import AlertTip from '../../components/AlertTip/AlertTip'
+import {reqSendCode,reqPwdLogin,reqSmsLogin}  from '../../api/index'
 export default {
   data () {
     return {
@@ -88,7 +89,7 @@ export default {
     }
   },  
   methods:{
-    // 倒计时获取验证码
+    // 异步倒计时获取验证码
     async getCode () {
       // !this.computeTime即 this.computeTime === 0
       if (!this.computeTime) {
@@ -101,6 +102,20 @@ export default {
             }
         },1000)
       }
+
+      //发送ajax请求 获取验证码
+      const result = await reqSendCode(this.phone)
+      // 发送不成功
+      if (result.code === 1) {
+        this.showAlert(result.msg)
+
+        //停止计时
+        if (this.computeTime) {
+          this.computeTime = 0
+          clearInterval(this.intervalId)
+          this.intervalId = undefined
+        }
+      }
     },
 
     // 显示弹窗
@@ -110,6 +125,7 @@ export default {
     },
     // 异步登陆
     async login () {
+        console.log("登录按钮已被点击")
         let result 
         // 短信登录
         if (this.loginWay) {
@@ -123,7 +139,6 @@ export default {
             this.showAlert('验证码必须是6位数字')
             return
           }
-
           //发送ajax请求短信登陆
           result = await reqSmsLogin(phone,code)
         } else {
@@ -141,7 +156,28 @@ export default {
           }
 
           //发送ajax请求密码登录
-          result = await reqPwdLogin(name,pwd,captcha)
+          result = await reqPwdLogin({name,pwd,captcha})
+
+          //停止计时 （短信登录功能）
+        if (this.computeTime) {
+          this.computeTime = 0
+          clearInterval(this.intervalId)
+          this.intervalId = undefined
+        }
+          //根据结果数据处理
+          //登录成功
+          if (result.code === 0) {
+              const user = result.data
+              //将user保存到vuex的state
+              this.$store.dispatch('recordUser',user)
+              //跳转界面到个人中心
+              this.$router.replace('/profile')
+          } else {
+            //显示新的图片验证码
+            this.getCaptcha()
+            const msg = result.msg
+            this.showAlert(msg)
+          }
         }
     },
 

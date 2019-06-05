@@ -7,17 +7,17 @@
           </HeaderTop>
           <!-- 个人中心 -->
           <section class="profile-number">
-            <router-link to ="/login" class="profile-link">
+            <router-link :to ="userInfo._id ? '/userinfo' :'/login'" class="profile-link">
               <div class="profile_image">
                 <i class="iconfont icon-iconuser"></i>
               </div>
               <div class="user-info">
-                <p class="user-info-top">登录/注册</p>
+                <p class="user-info-top" v-if="!userInfo.phone">{{userInfo.name || '登录/注册'}}</p>
                 <p>
                   <span class="user-icon">
                     <i class="iconfont icon-icon_mobile"></i>
                   </span>
-                  <span class="icon-mobile-number">暂无绑定手机号</span>
+                  <span class="icon-mobile-number">{{userInfo.phone || '暂无绑定手机号' }}</span>
                 </p>
               </div>
               <span class="arrow">
@@ -26,6 +26,7 @@
             </router-link>
           </section>
           <section class="profile_info_data border-1px">
+
             <ul class="info_data_list">
               <a href="javascript:" class="info_data_link">
                 <span class="info_data_top"><span>0.00</span>元</span>
@@ -92,6 +93,10 @@
                 </span>
               </div>
             </a>
+          </section>
+          <section class="profile_my_order border-1px">
+            <!-- 只有用户登录之后才会显示退出登录 同时绑定点击事件  -->
+            <mt-button type="danger" style="width:100%" v-if="userInfo._id" @click="logout">退出登录</mt-button>
           </section>    
       </section>
   </div>
@@ -99,6 +104,8 @@
 
 <script>
 import HeaderTop from '../../components/HeaderTop/HeaderTop.vue'
+import {mapState} from 'vuex'
+import {MessageBox,Toast} from 'mint-ui'
 export default {
   data () {
     return {
@@ -106,6 +113,21 @@ export default {
   },
   components:{
     HeaderTop
+  },
+  computed: {
+    ...mapState(['userInfo'])
+  },
+  methods:{
+    logout () {
+        MessageBox.confirm('确定退出吗？').then(action => {
+          //请求退出
+          this.$store.dispatch('logout')
+          Toast('退出完成')
+        }),
+        action => {
+          console.log('取消登录')
+        }
+    }
   }
 
 }

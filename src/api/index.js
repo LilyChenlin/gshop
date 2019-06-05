@@ -79,10 +79,10 @@ export const reqSendCode = (phone) => ajax(BASE_URL + '/sendcode',{
  * 手机号验证码登录
  */
 
-export const reqSmsLogin = ({
+export const reqSmsLogin = (
     phone,
     code
-}) => ajax(BASE_URL + '/login_sms', {
+) => ajax(BASE_URL + '/login_sms', {
     phone,
     code
 },'POST')
@@ -97,4 +97,4 @@ export const reqUserInfo = () => ajax(BASE_URL + '/userinfo')
  * 用户登出
  */
 
-export const reqLogout = () => ajax(BASE_URL + '/logoout')
+export const reqLogout = () => ajax(BASE_URL + '/logout')

@@ -16,6 +16,7 @@ export default {
     // 通过this.$store.dispatch 方法触发调用Action
     // this.$store.dispatch('getAddress')
     this.getAddress()
+    this.getUserInfo()
   },
 
   //注册组件
@@ -23,7 +24,7 @@ export default {
     FooterGuide
   },
   methods:{
-    ...mapActions(['getAddress'])
+    ...mapActions(['getAddress','getUserInfo'])
   }
 }
 </script>

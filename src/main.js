@@ -12,6 +12,9 @@ FastClick.attach(document.body);
 import {Button} from 'mint-ui'
 Vue.component(Button.name,Button)
 
+//引入mock模拟数据
+import './mock/mockServer.js'
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

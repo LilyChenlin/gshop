@@ -1,39 +1,39 @@
 <template>
   <div class="shop-header">
-    <nav class="shop-nav">
-      <a class="back">
-        <i class="iconfont icon-arrow_left"></i>
+    <nav class="shop-nav" :style="{backgroundImage:`url(${info.bgImg})`}">
+      <a class="back" @click="$router.back()">
+        <i class="iconfont icon-return"></i>
       </a>
     </nav>
-    <div class="shop-content">
-      <img class="content-image">
+    <div class="shop-content" @click="toggleShopShow">
+      <img class="content-image" :src="info.avatar" >
       <div class="header-content">
         <h2 class="content-title">
           <span class="content-tag">
             <span class="mini-tag">品牌</span>
           </span>
-          <span class="content-name">名字</span>
+          <span class="content-name">{{info.name}}</span>
           <i class="content-icon"></i>
         </h2>
         <div class="shop-message">
-          <span class="shop-message-detail">分数</span>
-          <span class="shop-message-detail">月售5单</span>
+          <span class="shop-message-detail">{{info.score}}</span>
+          <span class="shop-message-detail">月售{{info.sellCount}}单</span>
           <span class="shop-message-detail">
-            描述
-            <span>约45分钟</span>
+            {{info.description}}
+            <span>约{{info.deliveryTime}}分钟</span>
           </span>
-          <span class="shop-message-detail">距离50</span>
+          <span class="shop-message-detail">距离{{info.distance}}</span>
         </div>
       </div>
     </div>
 
-    <div class="shop-header-discounts">
+    <div class="shop-header-discounts" v-if="info.supports" @click="toggleSupportShow">
       <div class="discounts-left">
-        <div class="activity">
+        <div class="activity" :class="supportClasses[info.supports[0].type]">
           <span class="content-tag">
-            <span class="mini-tag"></span>
+            <span class="mini-tag">{{info.supports[0].name}}</span>
           </span>
-          <span class="activity-content ellipsis"></span>
+          <span class="activity-content ellipsis">{{info.supports[0].content}}</span>
         </div>
       </div>
       <div class="discounts-right">
@@ -41,8 +41,8 @@
       </div>
     </div>
 
-    <transition name="fade">
-      <div class="shop-brief-modal">
+    <transition name="fade" >
+      <div class="shop-brief-modal" v-show="shopShow">
         <div class="brief-modal-content">
           <h2 class="content-title">
           <span class="content-tag">
@@ -78,28 +78,28 @@
           <div class="brief-modal-notice">
             bulletin
           </div>
-          <div class="mask-footer">
-            <span class="iconfont icon-close"></span>
+          <div class="mask-footer" @click="toggleShopShow">
+            <span class="iconfont icon-guanbi1"></span>
           </div>
         </div>
         <div class="brief-modal-cover"></div>
       </div>
     </transition>
 
-    <transition name="fade">
-      <div class="activity-sheet">
+   <transition name="fade">
+      <div class="activity-sheet" v-show="supportShow">
         <div class="activity-sheet-content">
           <h2 class="activity-sheet-title">优惠活动</h2>
           <ul class="list">
-            <li class="activity-item">
+            <li class="activity-item" v-for="(support,index) in info.supports" :key="index" :class="supportClasses[support.type]">
             <span class="content-tag">
-                <span class="mini-tag">名字</span>
+                <span class="mini-tag">{{support.name}}</span>
               </span>
-              <span class="activity-content">内容</span>
+              <span class="activity-content">{{support.content}}</span>
             </li>
           </ul>
           <div class="activity-sheet-close">
-            <span class="iconfont icon-close"></span>
+            <span class="iconfont icon-guanbi1" @click="toggleSupportShow"></span>
           </div>
         </div>
         <div class="activity-sheet-cover"></div>
@@ -110,12 +110,26 @@
 
 
 <script>
-
+import {mapState} from 'vuex'
   export default {
     data () {
       return {
+        supportClasses:['activity-green','activity-red','activity-orange'],
+        shopShow:false,
+        supportShow:false
       }
     },
+    computed:{
+      ...mapState(['info'])
+    },
+    methods:{
+      toggleShopShow () {
+        this.shopShow = !this.shopShow
+      },
+      toggleSupportShow () {
+        this.supportShow = !this.supportShow
+      }
+    }
   }
 </script>
 

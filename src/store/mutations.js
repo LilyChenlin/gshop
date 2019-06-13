@@ -12,6 +12,8 @@ import {
     CLEAR_CART
 } from './mutations-type'
 import Vue from 'vue'
+import { stat } from 'fs';
+
 
 // [方法名](state,{param}){}
 export default {
@@ -44,14 +46,25 @@ export default {
         if (!food.count) {
             // food.count = 1
             Vue.set(food,'count',1)
+            state.cartFoods.push(food)
         } else {
             food.count++ 
         }
+        
     },
     [DECREMENT_FOOD_COUNT] (state, {food}) {
         // 只有有值才去减
         if (food.count) {   
             food.count--
+            if (food.count === 0) {
+                state.cartFoods.splice(state.cartFoods.indexOf(food),1)
+            }
         }
+    },
+    [CLEAR_CART] (state) {
+        //清除food中的count
+        state.cartFoods.forEach (food => food.count = 0)
+        //移除购物车中所有购物项
+        state.cartFoods = []
     }
 }

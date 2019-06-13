@@ -1,6 +1,7 @@
 <!--  -->
 <template>
-  <div class="goods">
+<div>
+<div class="goods">
     <!-- 左侧的菜单选项 -->
       <div class="menu-wrapper">
         <ul>
@@ -21,7 +22,7 @@
           <li class="food-list-hook"  v-for="(good,index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-           	  <li v-for="(food,index) in good.foods" :key="index" class="food-item bottom-border-1px">
+           	  <li v-for="(food,index) in good.foods" :key="index" class="food-item bottom-border-1px" @click="showFood(food)">
                 <div class="icon">
                   <img :src="food.image" width="57" height="57">
                 </div>
@@ -45,13 +46,18 @@
           </li>
         </ul>
       </div> 
+     <ShopCart></ShopCart>
     </div>
+    <Food :food="food" ref="food"></Food>
+</div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
 import BScroll from 'better-scroll'
 import CartControl from '../../../components/CartControl/CartControl'
+import Food from '../../../components/Food/Food'
+import ShopCart from '../../../components/ShopCart/ShopCart'
 export default {
   data () {
     return {
@@ -80,7 +86,7 @@ export default {
       const index = tops.findIndex((top,index) => {
         return scrollY >= tops[index] && scrollY < tops[index + 1]
       })
-      console.log('currentIndex:' + index)
+      // console.log('currentIndex:' + index)
       //记录index 相当于在某个区间
       return index
     }
@@ -111,6 +117,7 @@ export default {
         this.scrollY = Math.abs(y)
       })
     },
+    //计算右侧分类标题到顶部的举例数组
     _initTop () {
       // 1. 初始化tops
       let top = 0
@@ -135,10 +142,18 @@ export default {
       this.scrollY = scrollY
       // console.log('This.scrollY:' + this.scrollY)
       this.foodsScroll.scrollTo(0,-scrollY,300)
+    },
+    showFood (food) {
+      this.food = food
+      //显示food组件 (在父组件中调用子组件对象的方法)
+      this.$refs.food.toggleShow(food)
+
     }
   },
   components:{
-    CartControl
+    CartControl,
+    Food,
+    ShopCart
   }
 }
 

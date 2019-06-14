@@ -15,6 +15,8 @@ Vue.component(Button.name,Button)
 //引入mock模拟数据
 import './mock/mockServer.js'
 
+// 引入自定义过滤器 加载
+import './filters'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

@@ -37,12 +37,12 @@ export const reqAddress = geohash => ajax(`${BASE_URL}/position/${geohash}`)
  * http://localhost:3000/search_shops?keyword=test&geohash=40.10038,116.36867
  */
 
- export const reqSearchShops = ({
+ export const reqSearchShops = (
      geohash,
      keyword
- }) => ajax(BASE_URL + '/search_shops',{
-     keyword,
-     geohash
+ ) => ajax(BASE_URL + '/search_shops',{
+     geohash,
+     keyword
  })
 
 // /**
@@ -115,3 +115,4 @@ export const reqShopInfo = () => ajax('/info')
  */
 
 export const reqShopGoods = () => ajax('/goods')
+

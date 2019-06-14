@@ -1,4 +1,14 @@
-import {reqAddress,reqCategorys,reqShops,reqUserInfo,reqLogout, reqShopInfo, reqShopGoods, reqShopRatings} from '../api/index'
+import {
+    reqAddress,
+    reqCategorys,
+    reqShops,
+    reqUserInfo,
+    reqLogout,
+    reqShopInfo, 
+    reqShopGoods, 
+    reqShopRatings,
+    reqSearchShops
+} from '../api/index'
 import {
     RECEIVE_ADDRESS,
     RECEIVE_CATEGORYS,
@@ -10,7 +20,8 @@ import {
     RECEIVE_RATINGS,
     INCREMENT_FOOD_COUNT,
     DECREMENT_FOOD_COUNT,
-    CLEAR_CART
+    CLEAR_CART,
+    RECEIVE_SEARCH_SHOPS
 
 } from './mutations-type'
 
@@ -110,6 +121,16 @@ export default {
     },
     clearCart ({commit}) {
         commit (CLEAR_CART)
+    },
+    async searchShops ({commit,state},keyword) {
+        const geohash = state.latitude + ',' + state.longitude
+        const result = await reqSearchShops(geohash,keyword)
+        //请求成功
+        if (result.code === 0) {
+            const searchShops = result.data
+            commit(RECEIVE_SEARCH_SHOPS,{searchShops})
+        }
+
     }
 
 }
